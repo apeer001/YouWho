@@ -34,7 +34,7 @@ public class GeoLocationService extends Service implements LocationListener {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
 
-        Log.d(getClass().getSimpleName(), "Started geolocation in OnStartCommand");
+        //Log.d(getClass().getSimpleName(), "Started geolocation in OnStartCommand");
 
         // Get context
         mContext = getApplicationContext();
@@ -59,7 +59,7 @@ public class GeoLocationService extends Service implements LocationListener {
     @Override
     public void onProviderEnabled(String provider) {
 
-        Log.d(getClass().getSimpleName(), "onProviderEnabled called");
+        //Log.d(getClass().getSimpleName(), "onProviderEnabled called");
         mRequestingLocationUpdates = true;
         try {
             mLastLocation = locationManager.getLastKnownLocation(locationProvider.getName());
@@ -83,18 +83,18 @@ public class GeoLocationService extends Service implements LocationListener {
 
     @Override
     public void onLocationChanged(Location location) {
-        Log.d(getClass().getSimpleName(), "location changed");
+        //Log.d(getClass().getSimpleName(), "location changed");
         mLastLocation = location;
         updateGeoLocationOnParse(mLastLocation);
     }
 
     protected void startLocationUpdates() {
-        Log.d(getClass().getSimpleName(), "Started location updates");
+        //Log.d(getClass().getSimpleName(), "Started location updates");
         //LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, this);
         try {
             locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 1*20*1000, 0, this);
         } catch (SecurityException s) {
-            Log.d(getClass().getSimpleName(), "Must enable the location services permission by user");
+            //Log.d(getClass().getSimpleName(), "Must enable the location services permission by user");
             s.printStackTrace();
         }
 
@@ -121,11 +121,11 @@ public class GeoLocationService extends Service implements LocationListener {
             currentUser.saveInBackground(new SaveCallback() {
                 @Override
                 public void done(ParseException e) {
-                    Log.d(getClass().getSimpleName(), "Done saving geopoint");
+                    //Log.d(getClass().getSimpleName(), "Done saving geopoint");
                 }
             });
 
-            Log.d(getClass().getSimpleName(), mLastLocation.getLatitude() + ", " + mLastLocation.getLongitude());
+            //Log.d(getClass().getSimpleName(), mLastLocation.getLatitude() + ", " + mLastLocation.getLongitude());
         }
     }
 

@@ -11,6 +11,7 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Toast;
 
+import com.cs180.ucrtinder.youwho.FragmentSupport.AndroidDrawer;
 import com.cs180.ucrtinder.youwho.Instagram.InstagramApp;
 import com.cs180.ucrtinder.youwho.Parse.ParseConstants;
 import com.cs180.ucrtinder.youwho.Parse.YouWhoApplication;
@@ -42,6 +43,9 @@ public class IGWebActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.loading_screen);
 
+        AndroidDrawer drawer = new AndroidDrawer
+                (this,R.id.drawer_layout_loading,R.id.left_drawer_loading, R.id.loading_drawer_pic);
+
         ParseUser currentUser = ParseUser.getCurrentUser();
         boolean isIGLoggedIn = currentUser.getBoolean(ParseConstants.KEY_IG_BOOL);
         if (!isIGLoggedIn) {
@@ -62,7 +66,6 @@ public class IGWebActivity extends AppCompatActivity {
                     finish();
                 }
             };
-
 
             // Instagram Implementation
             instaObj = new InstagramApp(this, YouWhoApplication.IG_CLIENT_ID,

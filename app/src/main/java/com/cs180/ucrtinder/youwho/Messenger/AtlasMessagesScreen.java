@@ -23,6 +23,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
@@ -50,6 +51,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.cs180.ucrtinder.youwho.FragmentSupport.AndroidDrawer;
+import com.cs180.ucrtinder.youwho.Parse.ParseConstants;
 import com.cs180.ucrtinder.youwho.Parse.YouWhoApplication;
 import com.cs180.ucrtinder.youwho.R;
 import com.cs180.ucrtinder.youwho.atlas.Atlas;
@@ -73,6 +75,7 @@ import com.layer.sdk.messaging.MessagePart;
 import com.layer.sdk.query.Predicate;
 import com.layer.sdk.query.Query;
 import com.layer.sdk.query.SortDescriptor;
+import com.parse.ParseUser;
 
 /**
  * @author Oleg Orlov
@@ -112,7 +115,6 @@ public class AtlasMessagesScreen extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         this.uiHandler = new Handler();
         this.app = (YouWhoApplication) getApplication();
-        
         setContentView(R.layout.atlas_screen_messages);
 
         // Android drawer init
@@ -120,6 +122,9 @@ public class AtlasMessagesScreen extends AppCompatActivity {
         AndroidDrawer mDrawer = new AndroidDrawer
                 (this, R.id.drawer_layout_messages, R.id.left_drawer_messages, R.id.messages_profile_drawer_pic);
 
+        if(app.getLayerClient() == null) {
+            app.initLayerClient(app.getAppId());
+        }
 
         boolean convIsNew = getIntent().getBooleanExtra(EXTRA_CONVERSATION_IS_NEW, false);
         String convUri = getIntent().getStringExtra(EXTRA_CONVERSATION_URI);
@@ -129,32 +134,7 @@ public class AtlasMessagesScreen extends AppCompatActivity {
             ((NotificationManager)getSystemService(Context.NOTIFICATION_SERVICE)).cancel(convUri.hashCode()); // Clear notifications for this Conversation
         }
 
-        // Get all the people you can message with
-        Map<String, Participant> participantMap = new HashMap<>();
-        participantMap = app.getParticipantProvider().getParticipants(null, participantMap);
-
-        // Get the participant you want to talk to
-        String userID = getIntent().getStringExtra(EXTRA_NEW_USER);
-        Atlas.Participant participant = participantMap.get(userID);
-
-
-        participantsPicker = (AtlasParticipantPicker) findViewById(R.id.atlas_screen_messages_participants_picker);
-        participantsPicker.init(new String[]{app.getLayerClient().getAuthenticatedUserId()}, app.getParticipantProvider());
-        if (convIsNew) {
-            participantsPicker.setVisibility(View.VISIBLE);
-            String userIds[] = participantsPicker.getSelectedUserIds();
-            for (String s : userIds) {
-                Log.d(getClass().getSimpleName(), s);
-            }
-            // Instantiate a conversation on the list
-            if (participant != null) {
-                participantsPicker.addParticipantEntry(userID);
-                ensureConversationReady();
-                finish();
-            }
-
-        }
-        
+        // Initialize message Composer
         messageComposer = (AtlasMessageComposer) findViewById(R.id.atlas_screen_messages_message_composer);
         messageComposer.init(app.getLayerClient(), conv);
         messageComposer.setListener(new AtlasMessageComposer.Listener() {
@@ -168,7 +148,7 @@ public class AtlasMessagesScreen extends AppCompatActivity {
             }
 
         });
-        
+
         messageComposer.registerMenuItem("Photo", new OnClickListener() {
             public void onClick(View v) {
                 if (!ensureConversationReady()) return;
@@ -257,6 +237,54 @@ public class AtlasMessagesScreen extends AppCompatActivity {
         
         typingIndicator = (AtlasTypingIndicator)findViewById(R.id.atlas_screen_messages_typing_indicator);
         typingIndicator.init(conv, new AtlasTypingIndicator.DefaultTypingIndicatorCallback(app.getParticipantProvider()));
+
+
+        // Get all the people you can message with
+        Map<String, Participant> participantMap = new HashMap<>();
+        participantMap = app.getParticipantProvider().getParticipants(null, participantMap);
+
+        // Get the participant you want to talk to
+        String userID = getIntent().getStringExtra(EXTRA_NEW_USER);
+        Atlas.Participant participant = participantMap.get(userID);
+
+
+        participantsPicker = (AtlasParticipantPicker) findViewById(R.id.atlas_screen_messages_participants_picker);
+        participantsPicker.init(new String[]{app.getLayerClient().getAuthenticatedUserId()}, app.getParticipantProvider());
+        if (convIsNew) {
+            Log.d(getClass().getSimpleName(), "Conversation is new");
+            participantsPicker.setVisibility(View.VISIBLE);
+            String userIds[] = participantsPicker.getSelectedUserIds();
+            for (String s : userIds) {
+                Log.d(getClass().getSimpleName(), s);
+            }
+            Log.d(getClass().getSimpleName(), "done");
+            // Instantiate a conversation on the list
+            if (participant != null) {
+                Log.d(getClass().getSimpleName(), "Particpant is not null");
+                Log.d(getClass().getSimpleName(), "New Participant: " + participant.getFirstName());
+                participantsPicker.addParticipantEntry(userID);
+
+                String msgText;
+                if (!userID.equals("0")) {
+                    msgText = "Hi " + participant.getFirstName() + "! We matched. :)";
+                } else {
+                    ParseUser currentUser = ParseUser.getCurrentUser();
+                    String myid = currentUser.getString(ParseConstants.KEY_LAYERID);
+                    msgText = participantMap.get(myid).getFirstName() + " joined the global chat";
+                }
+                MessagePart part = app.getLayerClient().newMessagePart(Atlas.MIME_TYPE_TEXT, msgText.getBytes());
+                Message message = app.getLayerClient().newMessage(Arrays.asList(part));
+                ensureConversationReady();
+                conv.send(message);
+                setResult(RESULT_OK);
+                finish();
+            } else {
+                Log.d(getClass().getSimpleName(), "Particpant is null");
+                setResult(RESULT_CANCELED);
+                finish();
+            }
+
+        }
         
         // location manager for inserting locations:
         this.locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
@@ -279,13 +307,24 @@ public class AtlasMessagesScreen extends AppCompatActivity {
         
         // create new one
         String[] userIds = participantsPicker.getSelectedUserIds();
+        for (String s : userIds) {
+            Log.d("USERID" , s);
+        }
         
         // no people, no conversation
         if (userIds.length == 0) {          
             Toast.makeText(this, "Conversation cannot be created without participants", Toast.LENGTH_SHORT).show();
             return false;
         }
-        
+
+        // Delete this when you dont need it
+        List<Conversation> convos =    app.getLayerClient().getConversations();
+        for (Conversation c : convos) {
+            for (String s : c.getParticipants()) {
+                Log.d(getClass().getSimpleName(), s);
+            }
+        }
+
         conv = app.getLayerClient().newConversation(new ConversationOptions().distinct(false), userIds);
         participantsPicker.setVisibility(View.GONE);
         messageComposer.setConversation(conv);
@@ -467,22 +506,26 @@ public class AtlasMessagesScreen extends AppCompatActivity {
         int requestLocationTimeout = 1 * 1000; // every second
         int distance = 100;
         Location loc = null;
-        if (locationManager.getProvider(LocationManager.GPS_PROVIDER) != null) { 
-            loc = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-            if (debug) Log.w(TAG, "onResume() location from gps: " + loc);
-        }
-        if (loc == null && locationManager.getProvider(LocationManager.NETWORK_PROVIDER) != null) {
-            loc = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-            if (debug) Log.w(TAG, "onResume() location from network: " + loc);
-        } 
-        if (loc != null && loc.getTime() < System.currentTimeMillis() + LOCATION_EXPIRATION_TIME) {
-            locationTracker.onLocationChanged(loc);
-        }
-        if (locationManager.getProvider(LocationManager.GPS_PROVIDER) != null) {
-            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, requestLocationTimeout, distance, locationTracker);
-        }
-        if (locationManager.getProvider(LocationManager.NETWORK_PROVIDER) != null) {
-            locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, requestLocationTimeout, distance, locationTracker);
+        try {
+            if (locationManager.getProvider(LocationManager.GPS_PROVIDER) != null) {
+                loc = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+                if (debug) Log.w(TAG, "onResume() location from gps: " + loc);
+            }
+            if (loc == null && locationManager.getProvider(LocationManager.NETWORK_PROVIDER) != null) {
+                loc = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+                if (debug) Log.w(TAG, "onResume() location from network: " + loc);
+            }
+            if (loc != null && loc.getTime() < System.currentTimeMillis() + LOCATION_EXPIRATION_TIME) {
+                locationTracker.onLocationChanged(loc);
+            }
+            if (locationManager.getProvider(LocationManager.GPS_PROVIDER) != null) {
+                locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, requestLocationTimeout, distance, locationTracker);
+            }
+            if (locationManager.getProvider(LocationManager.NETWORK_PROVIDER) != null) {
+                locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, requestLocationTimeout, distance, locationTracker);
+            }
+        } catch (SecurityException s) {
+
         }
         
         app.getLayerClient().registerEventListener(messagesList);
@@ -517,8 +560,12 @@ public class AtlasMessagesScreen extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
-        
-        locationManager.removeUpdates(locationTracker);
+
+        try {
+            locationManager.removeUpdates(locationTracker);
+        } catch (SecurityException s) {
+
+        }
         
         app.getLayerClient().unregisterEventListener(messagesList);
         app.getLayerClient().unregisterTypingIndicator(typingIndicator.clear());

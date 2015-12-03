@@ -1,14 +1,9 @@
 package com.cs180.ucrtinder.youwho.ui;
 
-
-import android.content.Context;
-import android.content.SharedPreferences;
 import android.os.Bundle;
-
 import com.cs180.ucrtinder.youwho.Messenger.AtlasLoginScreen;
-import com.cs180.ucrtinder.youwho.Messenger.AtlasSettingsScreen;
+import com.cs180.ucrtinder.youwho.Messenger.AtlasMessagesScreen;
 import com.cs180.ucrtinder.youwho.R;
-
 import android.content.Intent;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
@@ -19,17 +14,15 @@ import android.widget.Button;
 
 import com.cs180.ucrtinder.youwho.Parse.ParseConstants;
 import com.cs180.ucrtinder.youwho.Parse.YouWhoApplication;
+import com.cs180.ucrtinder.youwho.atlas.AtlasMessagesList;
 import com.facebook.AccessToken;
 import com.facebook.GraphRequest;
 import com.facebook.GraphResponse;
 import com.facebook.HttpMethod;
 import com.facebook.Profile;
-import com.google.zxing.integration.android.IntentIntegrator;
-import com.parse.GetCallback;
 import com.parse.LogInCallback;
 import com.parse.ParseException;
 import com.parse.ParseFacebookUtils;
-import com.parse.ParseObject;
 import com.parse.ParseUser;
 
 import org.json.JSONArray;
@@ -53,6 +46,7 @@ public class LoginActivity extends FragmentActivity {
     private YouWhoApplication app;
 
     private static final int REQUEST_CODE_LOGIN_SCREEN = 191;
+    private static final int REQUEST_CODE_ADD_GLOBAL = 007;
 
     private JSONObject FacebookDataObject;
 
@@ -66,11 +60,10 @@ public class LoginActivity extends FragmentActivity {
         app = (YouWhoApplication) getApplication();
 
         mProfile = Profile.getCurrentProfile();
-        if(mProfile != null){
+        if(mProfile != null) {
             Intent intent = new Intent(mActivity, MainActivity.class);
             startActivity(intent);
         }
-
 
         signInButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -115,9 +108,10 @@ public class LoginActivity extends FragmentActivity {
                     return;
                 } else if (parseUser.isNew()) {
                     Log.d("MyApp", "User signed up and logged in through Facebook!");
-//                    parseUser.put(ParseConstants.KEY_LAYERID, app.getLayerClient().getAuthenticatedUserId());
-//                    parseUser.saveInBackground();
                     loginSuccessful(true);
+                    Log.d(getClass().getSimpleName(), "authenticated layer id: " + app.getLayerClient().getAuthenticatedUserId());
+                    parseUser.put(ParseConstants.KEY_LAYERID, app.getLayerClient().getAuthenticatedUserId());
+                    parseUser.saveInBackground();
                     /*
                     if (app != null) {
                         parseUser.put(ParseConstants.KEY_LAYERID, app.getLayerClient().getAuthenticatedUserId());
@@ -127,27 +121,18 @@ public class LoginActivity extends FragmentActivity {
                     Log.d("MyApp", "User logged in through Facebook!");
                     loginSuccessful(false);
                     String id = parseUser.getString(ParseConstants.KEY_LAYERID);
+                    /*
                     if (id != null) {
+                        id = "layer:///apps/staging/" + id;
+                        Log.d(getClass().getSimpleName(), "ID: " + id);
                         app.setAppId(id);
                     }
-                    //app.initLayerClient(app.getAppId());
+                    */
+                    app.initLayerClient(app.getAppId());
                 }
                 parseUser.saveInBackground();
             }
         });
-
-         /*
-            parseUser.fetchInBackground(new GetCallback<ParseObject>() {
-                @Override
-                public void done(ParseObject parseObject, ParseException e) {
-                    if (e != null) {
-                    } else {
-                        ParseUser currentUser = (ParseUser) parseObject;
-                        currentUser.pinInBackground();
-                    }
-                }
-            });
-        */
     }
 
     public void loginSuccessful(final boolean isNewUser){
@@ -159,9 +144,7 @@ public class LoginActivity extends FragmentActivity {
                     public void onCompleted(final JSONObject jsonObject, GraphResponse graphResponse) {
 
                         Log.e("RESPONSE", jsonObject.toString());
-
                         getUserDetailsFromFB(jsonObject);
-
                         mActivity.runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
@@ -170,7 +153,6 @@ public class LoginActivity extends FragmentActivity {
                                 Log.w(getClass().getSimpleName(), "Captured App ID: " + app.getAppId() );
                                 try {
                                     app.initLayerClient(app.getAppId());
-
                                 } catch (IllegalArgumentException e) {
                                 }
 
@@ -211,11 +193,10 @@ public class LoginActivity extends FragmentActivity {
             String id = json.getString("id");
             String birthday = json.getString("birthday");
 
-            user.put("gender", gender);
+            user.put(ParseConstants.KEY_GENDER, gender);
             user.put(ParseConstants.KEY_NAME, firstName);
             user.put(ParseConstants.KEY_FACEBOOKID, id);
             user.put(ParseConstants.KEY_BIRTHDAY, birthday);
-
 
             List<ParseUser> likes = user.getList(ParseConstants.KEY_LIKES);
             if(likes == null) {
@@ -258,7 +239,6 @@ public class LoginActivity extends FragmentActivity {
 
             for(int i = 0; i < profileArray.length(); i++) {
                 JSONObject obj = profileArray.getJSONObject(i);
-
                 if (obj.getString("name").toLowerCase().equals("profile pictures")) {
                     profileAlbumID = obj.getString("id");
                     break;
@@ -365,14 +345,22 @@ public class LoginActivity extends FragmentActivity {
             return;
         }
         if (requestCode == REQUEST_CODE_LOGIN_SCREEN && resultCode == RESULT_OK) {
+            String newUserId = "0";
+            Intent addGlobalChatIntent = new Intent(getApplicationContext(), AtlasMessagesScreen.class);
+            Log.d(getClass().getSimpleName(), "Jumping to new conversation message update " + newUserId);
+            addGlobalChatIntent.putExtra(AtlasMessagesScreen.EXTRA_CONVERSATION_IS_NEW, true);
+            addGlobalChatIntent.putExtra(AtlasMessagesScreen.EXTRA_NEW_USER, newUserId);
+            startActivityForResult(addGlobalChatIntent, REQUEST_CODE_ADD_GLOBAL);
 
+        } else if (requestCode == REQUEST_CODE_ADD_GLOBAL && resultCode == RESULT_OK) {
+            Log.d(getClass().getSimpleName(), "Added global and now starting main activity");
             // Jump to the mainactivity because the user logged in
             Intent intent = new Intent(mActivity, MainActivity.class);
             intent.putExtra("user_data", FacebookDataObject.toString());
             startActivity(intent);
             finish();
-
-        } else {
+        }
+        else {
             ParseFacebookUtils.onActivityResult(requestCode, resultCode, data);
         }
     }

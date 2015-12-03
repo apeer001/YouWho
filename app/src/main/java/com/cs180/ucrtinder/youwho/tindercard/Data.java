@@ -63,17 +63,16 @@ public class Data {
                     @Override
                     public void onCompleted(GraphResponse graphResponse) {
 
-                        Log.e("RESPONSE", graphResponse.toString());
-
+                        //Log.e("RESPONSE", graphResponse.toString());
                         try {
                             JSONObject contextObj = graphResponse.getJSONObject().getJSONObject("context");
                             JSONObject mutualFriendsObj = contextObj.getJSONObject("mutual_friends");
                             JSONObject summaryObj = mutualFriendsObj.getJSONObject("summary");
                             mutualFriends = summaryObj.getInt("total_count") + "";
                         } catch(JSONException e){
-                            e.printStackTrace();
+                            //e.printStackTrace();
                         } catch (NullPointerException n) {
-                            n.printStackTrace();
+                            //n.printStackTrace();
                         }
 
                         mCallback.onCardsLoaded();

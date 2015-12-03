@@ -36,6 +36,7 @@ import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 import android.widget.TextView;
 
+import com.cs180.ucrtinder.youwho.Parse.YouWhoApplication;
 import com.cs180.ucrtinder.youwho.R;
 import com.layer.sdk.LayerClient;
 import com.layer.sdk.exceptions.LayerException;
@@ -107,7 +108,7 @@ public class AtlasMessageComposer extends FrameLayout {
         
         this.layerClient = client;
         this.conv = conversation;
-        
+
         LayoutInflater.from(getContext()).inflate(R.layout.atlas_message_composer, this);
         
         btnUpload = findViewById(R.id.atlas_message_composer_upload);

@@ -210,7 +210,7 @@ public class ConversationActivity extends AppCompatActivity {
         }
         // Initialize the LayerClient
         if ((app.getAppId() != null) && app.getLayerClient() == null) {
-            app.initLayerClient(app.getAppId());
+            //app.initLayerClient(app.getAppId());
         }
         // Can we continue in this Activity?
         if ((app.getAppId() != null) && (app.getLayerClient() != null) && app.getLayerClient().isAuthenticated()) {

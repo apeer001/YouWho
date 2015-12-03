@@ -40,5 +40,4 @@ public final class ParseConstants {
     public static final String KEY_IG_USER_ACCESSTOKEN = "IG_USER_ACCESSTOKEN";
     public static final String KEY_IG_API_ID = "IG_API_ID";
     public static final String KEY_IG_BOOL = "IG_BOOL";
-
 }

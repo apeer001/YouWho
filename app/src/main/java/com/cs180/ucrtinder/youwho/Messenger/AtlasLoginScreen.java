@@ -16,6 +16,7 @@
 package com.cs180.ucrtinder.youwho.Messenger;
 import android.app.Activity;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
@@ -39,11 +40,13 @@ import com.parse.ParseUser;
  */
 public class AtlasLoginScreen extends Activity {
     private static final String TAG = AtlasLoginScreen.class.getSimpleName();
-    private static final boolean debug = false;
+    private static final boolean debug = true;
     
     private volatile boolean inProgress = false;
     private EditText loginText;
     private View goButton;
+
+    private static final long WAIT_TIME = 20;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -117,12 +120,13 @@ public class AtlasLoginScreen extends Activity {
         }
         inProgress = true;
 
-        layerClient.registerAuthenticationListener(new LayerAuthenticationListener() {
+
+        final LayerAuthenticationListener layerAuthenticationListener = new LayerAuthenticationListener() {
             public void onAuthenticationChallenge(final LayerClient client, final String nonce) {
                 if (debug) Log.w(TAG, "onAuthenticationChallenge() nonce: " + nonce);
                 new Thread(new Runnable() {
                     public void run() {
-                        String[] tokenAndError = new String[] {null, null};
+                        String[] tokenAndError = new String[]{null, null};
                         try {
                             tokenAndError = identityProvider.getIdentityToken(nonce, userName);
                         } catch (Exception e) {
@@ -170,9 +174,27 @@ public class AtlasLoginScreen extends Activity {
                     }
                 });
             }
-        });
+        };
+
+        layerClient.registerAuthenticationListener(layerAuthenticationListener);
 
         layerClient.authenticate();
         updateValues();
+
+        final Long startTime = System.currentTimeMillis();
+        final Handler mHandler = new Handler();
+        mHandler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                if (System.currentTimeMillis() - startTime  > 15 * WAIT_TIME) {
+                    mHandler.removeCallbacks(this);
+                    setResult(RESULT_OK);
+                    layerClient.unregisterAuthenticationListener(layerAuthenticationListener);
+                    finish();
+                    return;
+                }
+                mHandler.postDelayed(this, WAIT_TIME);
+            }
+        }, WAIT_TIME);
     }
 }

@@ -82,7 +82,6 @@ public class LoadingScreenActivity extends AppCompatActivity {
         } catch (NullPointerException np) {
             np.printStackTrace();
         }
-
         mAct = this;
 
         AndroidDrawer drawer = new AndroidDrawer

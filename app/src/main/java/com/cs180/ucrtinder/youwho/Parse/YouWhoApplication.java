@@ -10,6 +10,8 @@ import com.layer.sdk.LayerClient;
 import com.parse.Parse;
 import com.parse.ParseFacebookUtils;
 import com.parse.ParseInstallation;
+import com.parse.ParseUser;
+
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.UUID;
@@ -113,9 +115,16 @@ public class YouWhoApplication extends Application {
         }
         else if (!client.isConnected()) {
             client.connect();
+
+            // Save the authenticated user id to parse
+            ParseUser currentUser = ParseUser.getCurrentUser();
+            if (currentUser != null) {
+                currentUser.put(ParseConstants.KEY_LAYERID, client.getAuthenticatedUserId());
+                Log.w(TAG, "Layer authenticated with " + client.getAuthenticatedUserId());
+            }
         }
         if (debug) {
-            Log.w(TAG, "onCreate() Layer launched");
+            Log.w(TAG, "Layer launched");
         }
         identityProvider.requestRefresh();
 

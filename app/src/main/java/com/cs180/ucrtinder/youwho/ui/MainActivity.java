@@ -89,12 +89,23 @@ public class MainActivity extends AppCompatActivity implements FlingCardListener
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        try {
+            ParseUser curruser = ParseUser.getCurrentUser();
+            if (curruser == null) {
+                Intent intent = new Intent(this, LoginActivity.class);
+                startActivity(intent);
+                finish();
+            }
+        } catch (NullPointerException n) {
+
+        }
+
         mActivity = this;
 
         // Start Location when this activity is open
         geolocationIntent = new Intent(this, GeoLocationService.class);
         if (!checkIfLocationEnabled()) {
-            Log.d(getClass().getSimpleName(), "Started the geolocation service");
+            //Log.d(getClass().getSimpleName(), "Started the geolocation service");
             requestionLocationPermisson();
         } else {
             startService(geolocationIntent);
@@ -112,7 +123,7 @@ public class MainActivity extends AppCompatActivity implements FlingCardListener
         try {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         } catch (NullPointerException np) {
-            np.printStackTrace();
+            //np.printStackTrace();
         }
 
         // Builds Fling card container
@@ -125,7 +136,7 @@ public class MainActivity extends AppCompatActivity implements FlingCardListener
     @Override
     public void onResume(){
         super.onResume();
-        Log.d(getClass().getSimpleName(), "Stopped the geolocation service");
+        //Log.d(getClass().getSimpleName(), "Stopped the geolocation service");
         // Start geolocation update service
         startService(new Intent(this, GeoLocationService.class));
     }
@@ -133,7 +144,7 @@ public class MainActivity extends AppCompatActivity implements FlingCardListener
     @Override
     protected void onPause() {
         super.onPause();
-        Log.d(getClass().getSimpleName(), "Stopped the geolocation service");
+        //Log.d(getClass().getSimpleName(), "Stopped the geolocation service");
         // Stop geolocation update service
         stopService(new Intent(this, GeoLocationService.class));
     }
@@ -141,7 +152,7 @@ public class MainActivity extends AppCompatActivity implements FlingCardListener
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        Log.d(getClass().getSimpleName(), "Stopped the geolocation service");
+        //Log.d(getClass().getSimpleName(), "Stopped the geolocation service");
         // Stop geolocation update service
         stopService(new Intent(this, GeoLocationService.class));
     }
@@ -172,7 +183,7 @@ public class MainActivity extends AppCompatActivity implements FlingCardListener
                 try {
                     user = ParseUser.getCurrentUser();
                 } catch (NullPointerException n) {
-                    n.printStackTrace();
+                    //n.printStackTrace();
                 }
 
                 al = new ArrayList<>();
@@ -250,7 +261,7 @@ public class MainActivity extends AppCompatActivity implements FlingCardListener
 
     @Override
     public void onActionDownPerform() {
-        Log.e("action", "bingo");
+        //Log.e("action", "bingo");
     }
 
     public static class ViewHolder {
@@ -465,7 +476,7 @@ public class MainActivity extends AppCompatActivity implements FlingCardListener
                     user.saveInBackground();
                 }
                 catch(Exception e){
-                    e.printStackTrace();
+                    //e.printStackTrace();
                 }
             }
         }
@@ -489,6 +500,21 @@ public class MainActivity extends AppCompatActivity implements FlingCardListener
 
                 if (currentCandidate < candidates.size()) {
                     List<ParseUser> targetlikes = candidates.get(currentCandidate).getList(ParseConstants.KEY_LIKES);
+
+                    // This is here for testing. Its for the adding of new conversations
+                    ParseUser tempCandidate;
+                    Iterator<ParseUser> candidateIter1 = candidates.iterator();
+                    int index1 = 0;
+                    while (candidateIter1.hasNext() && candidates.size() > currentCandidate) {
+                        if (index1 == currentCandidate) {
+                            break;
+                        }
+                        candidateIter1.next();
+                        index1++;
+                    }
+                    tempCandidate = candidateIter1.next();
+                    // -- end --
+
                     if (targetlikes.contains(user)) {
                         // Get the current Candidate
                         Iterator<ParseUser> candidateIter = candidates.iterator();
@@ -521,10 +547,14 @@ public class MainActivity extends AppCompatActivity implements FlingCardListener
                             currCandidate.saveInBackground();
                         }
                         catch (Exception e){
-                            e.printStackTrace();
+                            //e.printStackTrace();
                         }
-                        //candidates.get(currentCandidate).saveInBackground();
+
                     }
+
+                    // This is here for testing but now works just needs to have the algorithm
+                    // Add the current card if it matches
+                    addNewConversationWithThisCard(tempCandidate);
                 }
                 ++currentCandidate;
 
@@ -545,9 +575,6 @@ public class MainActivity extends AppCompatActivity implements FlingCardListener
                     }
                 });
                 // End of executor service
-
-                // Add the current card if it matches
-                addNewConversationWithThisCard();
             }
         }
 
@@ -572,44 +599,32 @@ public class MainActivity extends AppCompatActivity implements FlingCardListener
                 }
             }
             catch (NullPointerException n) {
-                n.printStackTrace();
+                //n.printStackTrace();
             }
         }
     }
 
-    public void addNewConversationWithThisCard() {
-
-        ExecutorService executor = Executors.newFixedThreadPool(1);
-        executor.execute(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    ParseUser currentUser = null;
-
-                    try {
-                        currentUser = ParseUser.getCurrentUser();
-                        if (currentUser != null) {
-                            Log.d(getClass().getSimpleName(), "Username: " + currentUser.get(ParseConstants.KEY_NAME));
-                        }
-                        newUserId = currentUser.getString(ParseConstants.KEY_LAYERID);
-                    } catch (NullPointerException n) {
-                        n.printStackTrace();
-                    }
-
-
-                    if (newUserId != null) {
-                        Intent intent = new Intent(getApplicationContext(), AtlasMessagesScreen.class);
-                        intent.putExtra(AtlasMessagesScreen.EXTRA_CONVERSATION_IS_NEW, true);
-                        intent.putExtra(AtlasMessagesScreen.EXTRA_NEW_USER, newUserId);
-                        startActivity(intent);
-                    }
-                } catch (NullPointerException n) {
-                    n.printStackTrace();
+    public void addNewConversationWithThisCard(ParseUser currCandidate) {
+        Log.d(getClass().getSimpleName(), "Adding a new person to conversation list");
+        try {
+            try {
+                if (currCandidate != null) {
+                    Log.d(getClass().getSimpleName(), "Username: " + currCandidate.get(ParseConstants.KEY_NAME));
                 }
+                newUserId = currCandidate.getString(ParseConstants.KEY_LAYERID);
+            } catch (NullPointerException n) {
+                //n.printStackTrace();
             }
-        });
-        if (!executor.isShutdown()) {
-            executor.shutdown();
+
+            if (newUserId != null && !newUserId.equals("")) {
+                Log.d(getClass().getSimpleName(), "Jumping to new conversation message update " + newUserId);
+                Intent intent = new Intent(getApplicationContext(), AtlasMessagesScreen.class);
+                intent.putExtra(AtlasMessagesScreen.EXTRA_CONVERSATION_IS_NEW, true);
+                intent.putExtra(AtlasMessagesScreen.EXTRA_NEW_USER, newUserId);
+                startActivity(intent);
+            }
+        } catch (NullPointerException n) {
+            //n.printStackTrace();
         }
     }
 
