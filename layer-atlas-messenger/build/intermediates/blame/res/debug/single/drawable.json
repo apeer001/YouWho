@@ -1,0 +1,82 @@
+[
+    {
+        "merged": "C:\\Users\\Aaron\\Documents\\YouWho\\layer-atlas-messenger\\build\\intermediates\\res\\merged\\debug\\drawable\\atlas_shape_rounded16_gray.xml",
+        "source": "C:\\Users\\Aaron\\Documents\\YouWho\\layer-atlas-messenger\\build\\intermediates\\exploded-aar\\YouWho\\layer-atlas\\unspecified\\res\\drawable\\atlas_shape_rounded16_gray.xml"
+    },
+    {
+        "merged": "C:\\Users\\Aaron\\Documents\\YouWho\\layer-atlas-messenger\\build\\intermediates\\res\\merged\\debug\\drawable\\border_shape.xml",
+        "source": "C:\\Users\\Aaron\\Documents\\YouWho\\layer-atlas-messenger\\src\\main\\res\\drawable\\border_shape.xml"
+    },
+    {
+        "merged": "C:\\Users\\Aaron\\Documents\\YouWho\\layer-atlas-messenger\\build\\intermediates\\res\\merged\\debug\\drawable\\common_signin_btn_icon_dark.xml",
+        "source": "C:\\Users\\Aaron\\Documents\\YouWho\\layer-atlas-messenger\\build\\intermediates\\exploded-aar\\com.google.android.gms\\play-services-base\\7.5.0\\res\\drawable\\common_signin_btn_icon_dark.xml"
+    },
+    {
+        "merged": "C:\\Users\\Aaron\\Documents\\YouWho\\layer-atlas-messenger\\build\\intermediates\\res\\merged\\debug\\drawable\\atlas_shape_rounded16_blue_no_right.xml",
+        "source": "C:\\Users\\Aaron\\Documents\\YouWho\\layer-atlas-messenger\\build\\intermediates\\exploded-aar\\YouWho\\layer-atlas\\unspecified\\res\\drawable\\atlas_shape_rounded16_blue_no_right.xml"
+    },
+    {
+        "merged": "C:\\Users\\Aaron\\Documents\\YouWho\\layer-atlas-messenger\\build\\intermediates\\res\\merged\\debug\\drawable\\atlas_shape_circle_white.xml",
+        "source": "C:\\Users\\Aaron\\Documents\\YouWho\\layer-atlas-messenger\\build\\intermediates\\exploded-aar\\YouWho\\layer-atlas\\unspecified\\res\\drawable\\atlas_shape_circle_white.xml"
+    },
+    {
+        "merged": "C:\\Users\\Aaron\\Documents\\YouWho\\layer-atlas-messenger\\build\\intermediates\\res\\merged\\debug\\drawable\\atlas_shape_circle_gray.xml",
+        "source": "C:\\Users\\Aaron\\Documents\\YouWho\\layer-atlas-messenger\\build\\intermediates\\exploded-aar\\YouWho\\layer-atlas\\unspecified\\res\\drawable\\atlas_shape_circle_gray.xml"
+    },
+    {
+        "merged": "C:\\Users\\Aaron\\Documents\\YouWho\\layer-atlas-messenger\\build\\intermediates\\res\\merged\\debug\\drawable\\atlas_shape_rounded16_blue_no_top_right.xml",
+        "source": "C:\\Users\\Aaron\\Documents\\YouWho\\layer-atlas-messenger\\build\\intermediates\\exploded-aar\\YouWho\\layer-atlas\\unspecified\\res\\drawable\\atlas_shape_rounded16_blue_no_top_right.xml"
+    },
+    {
+        "merged": "C:\\Users\\Aaron\\Documents\\YouWho\\layer-atlas-messenger\\build\\intermediates\\res\\merged\\debug\\drawable\\common_signin_btn_text_light.xml",
+        "source": "C:\\Users\\Aaron\\Documents\\YouWho\\layer-atlas-messenger\\build\\intermediates\\exploded-aar\\com.google.android.gms\\play-services-base\\7.5.0\\res\\drawable\\common_signin_btn_text_light.xml"
+    },
+    {
+        "merged": "C:\\Users\\Aaron\\Documents\\YouWho\\layer-atlas-messenger\\build\\intermediates\\res\\merged\\debug\\drawable\\atlas_shape_btn_rectangle_blue.xml",
+        "source": "C:\\Users\\Aaron\\Documents\\YouWho\\layer-atlas-messenger\\src\\main\\res\\drawable\\atlas_shape_btn_rectangle_blue.xml"
+    },
+    {
+        "merged": "C:\\Users\\Aaron\\Documents\\YouWho\\layer-atlas-messenger\\build\\intermediates\\res\\merged\\debug\\drawable\\common_signin_btn_icon_light.xml",
+        "source": "C:\\Users\\Aaron\\Documents\\YouWho\\layer-atlas-messenger\\build\\intermediates\\exploded-aar\\com.google.android.gms\\play-services-base\\7.5.0\\res\\drawable\\common_signin_btn_icon_light.xml"
+    },
+    {
+        "merged": "C:\\Users\\Aaron\\Documents\\YouWho\\layer-atlas-messenger\\build\\intermediates\\res\\merged\\debug\\drawable\\atlas_shape_plus_blue.xml",
+        "source": "C:\\Users\\Aaron\\Documents\\YouWho\\layer-atlas-messenger\\src\\main\\res\\drawable\\atlas_shape_plus_blue.xml"
+    },
+    {
+        "merged": "C:\\Users\\Aaron\\Documents\\YouWho\\layer-atlas-messenger\\build\\intermediates\\res\\merged\\debug\\drawable\\atlas_ctl_menu_item_background.xml",
+        "source": "C:\\Users\\Aaron\\Documents\\YouWho\\layer-atlas-messenger\\build\\intermediates\\exploded-aar\\YouWho\\layer-atlas\\unspecified\\res\\drawable\\atlas_ctl_menu_item_background.xml"
+    },
+    {
+        "merged": "C:\\Users\\Aaron\\Documents\\YouWho\\layer-atlas-messenger\\build\\intermediates\\res\\merged\\debug\\drawable\\atlas_shape_plus_shadow.xml",
+        "source": "C:\\Users\\Aaron\\Documents\\YouWho\\layer-atlas-messenger\\src\\main\\res\\drawable\\atlas_shape_plus_shadow.xml"
+    },
+    {
+        "merged": "C:\\Users\\Aaron\\Documents\\YouWho\\layer-atlas-messenger\\build\\intermediates\\res\\merged\\debug\\drawable\\atlas_shape_rounded16_gray_no_top_left.xml",
+        "source": "C:\\Users\\Aaron\\Documents\\YouWho\\layer-atlas-messenger\\build\\intermediates\\exploded-aar\\YouWho\\layer-atlas\\unspecified\\res\\drawable\\atlas_shape_rounded16_gray_no_top_left.xml"
+    },
+    {
+        "merged": "C:\\Users\\Aaron\\Documents\\YouWho\\layer-atlas-messenger\\build\\intermediates\\res\\merged\\debug\\drawable\\atlas_shape_rounded16_blue_no_bottom_right.xml",
+        "source": "C:\\Users\\Aaron\\Documents\\YouWho\\layer-atlas-messenger\\build\\intermediates\\exploded-aar\\YouWho\\layer-atlas\\unspecified\\res\\drawable\\atlas_shape_rounded16_blue_no_bottom_right.xml"
+    },
+    {
+        "merged": "C:\\Users\\Aaron\\Documents\\YouWho\\layer-atlas-messenger\\build\\intermediates\\res\\merged\\debug\\drawable\\atlas_shape_rounded16_gray_no_bottom_left.xml",
+        "source": "C:\\Users\\Aaron\\Documents\\YouWho\\layer-atlas-messenger\\build\\intermediates\\exploded-aar\\YouWho\\layer-atlas\\unspecified\\res\\drawable\\atlas_shape_rounded16_gray_no_bottom_left.xml"
+    },
+    {
+        "merged": "C:\\Users\\Aaron\\Documents\\YouWho\\layer-atlas-messenger\\build\\intermediates\\res\\merged\\debug\\drawable\\atlas_shape_rounded16_blue.xml",
+        "source": "C:\\Users\\Aaron\\Documents\\YouWho\\layer-atlas-messenger\\build\\intermediates\\exploded-aar\\YouWho\\layer-atlas\\unspecified\\res\\drawable\\atlas_shape_rounded16_blue.xml"
+    },
+    {
+        "merged": "C:\\Users\\Aaron\\Documents\\YouWho\\layer-atlas-messenger\\build\\intermediates\\res\\merged\\debug\\drawable\\atlas_shape_rounded24_gray.xml",
+        "source": "C:\\Users\\Aaron\\Documents\\YouWho\\layer-atlas-messenger\\build\\intermediates\\exploded-aar\\YouWho\\layer-atlas\\unspecified\\res\\drawable\\atlas_shape_rounded24_gray.xml"
+    },
+    {
+        "merged": "C:\\Users\\Aaron\\Documents\\YouWho\\layer-atlas-messenger\\build\\intermediates\\res\\merged\\debug\\drawable\\common_signin_btn_text_dark.xml",
+        "source": "C:\\Users\\Aaron\\Documents\\YouWho\\layer-atlas-messenger\\build\\intermediates\\exploded-aar\\com.google.android.gms\\play-services-base\\7.5.0\\res\\drawable\\common_signin_btn_text_dark.xml"
+    },
+    {
+        "merged": "C:\\Users\\Aaron\\Documents\\YouWho\\layer-atlas-messenger\\build\\intermediates\\res\\merged\\debug\\drawable\\atlas_shape_rounded16_gray_no_left.xml",
+        "source": "C:\\Users\\Aaron\\Documents\\YouWho\\layer-atlas-messenger\\build\\intermediates\\exploded-aar\\YouWho\\layer-atlas\\unspecified\\res\\drawable\\atlas_shape_rounded16_gray_no_left.xml"
+    }
+]
