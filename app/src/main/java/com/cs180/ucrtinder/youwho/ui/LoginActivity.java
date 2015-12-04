@@ -1,11 +1,15 @@
 package com.cs180.ucrtinder.youwho.ui;
 
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
+import android.content.pm.Signature;
 import android.os.Bundle;
 import com.cs180.ucrtinder.youwho.Messenger.AtlasLoginScreen;
 import com.cs180.ucrtinder.youwho.Messenger.AtlasMessagesScreen;
 import com.cs180.ucrtinder.youwho.R;
 import android.content.Intent;
 import android.support.v4.app.FragmentActivity;
+import android.util.Base64;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -29,6 +33,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -109,9 +115,19 @@ public class LoginActivity extends FragmentActivity {
                 } else if (parseUser.isNew()) {
                     Log.d("MyApp", "User signed up and logged in through Facebook!");
                     loginSuccessful(true);
-                    Log.d(getClass().getSimpleName(), "authenticated layer id: " + app.getLayerClient().getAuthenticatedUserId());
-                    parseUser.put(ParseConstants.KEY_LAYERID, app.getLayerClient().getAuthenticatedUserId());
-                    parseUser.saveInBackground();
+
+                    app.initLayerClient(app.getAppId());
+
+//                    Log.e("LAYERID", "" + app.getAppId());
+//
+//                    if(app.getLayerClient().getAuthenticatedUserId() == null){
+//                        Log.e("WOES", "NULL");
+//                        app.getLayerClient().authenticate();
+//                    }
+
+                    //Log.d(getClass().getSimpleName(), "authenticated layer id: " + app.getLayerClient().getAuthenticatedUserId());
+                    //parseUser.put(ParseConstants.KEY_LAYERID, app.getLayerClient().getAuthenticatedUserId());
+                    //parseUser.saveInBackground();
                     /*
                     if (app != null) {
                         parseUser.put(ParseConstants.KEY_LAYERID, app.getLayerClient().getAuthenticatedUserId());
@@ -154,14 +170,15 @@ public class LoginActivity extends FragmentActivity {
                                 try {
                                     app.initLayerClient(app.getAppId());
                                 } catch (IllegalArgumentException e) {
+                                    e.printStackTrace();
                                 }
 
-                                Intent intent = new Intent(mActivity, AtlasLoginScreen.class);
-                                startActivityForResult(intent, REQUEST_CODE_LOGIN_SCREEN);
-                                /*
+//                                Intent intent = new Intent(mActivity, AtlasLoginScreen.class);
+//                                startActivityForResult(intent, REQUEST_CODE_LOGIN_SCREEN);
+
                                 Intent intent = new Intent(mActivity, MainActivity.class);
                                 intent.putExtra("user_data", jsonObject.toString());
-                                */
+
                                 startActivity(intent);
                                 //LoginActivity.this.finish();
                                 Log.e("START", "AFTER LOGIN");
@@ -192,6 +209,10 @@ public class LoginActivity extends FragmentActivity {
             String firstName = name.substring(0, name.indexOf(' '));
             String id = json.getString("id");
             String birthday = json.getString("birthday");
+
+            if(gender == null){
+                gender = "male";
+            }
 
             user.put(ParseConstants.KEY_GENDER, gender);
             user.put(ParseConstants.KEY_NAME, firstName);
