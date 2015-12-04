@@ -25,11 +25,10 @@
             android:id="@+id/my_toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            android:background="@color/dark_gray_toolbar"
+            android:background="#FFFFFF"
             android:elevation="4dp"
             android:theme="@style/ToolBarStyle"
-            android:popupTheme="@style/Theme.AppCompat.Light"
-            android:navigationIcon="@drawable/three_black_bars_small"/>
+            android:popupTheme="@style/Theme.AppCompat.Light" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -38,7 +37,8 @@
             android:paddingLeft="10dp"
             android:paddingStart="10dp"
             android:paddingRight="10dp"
-            android:paddingEnd="10dp">
+            android:paddingEnd="10dp"
+            android:background="#9ff8dbdc">
 
             <Switch
                 android:layout_width="match_parent"
@@ -46,22 +46,21 @@
                 android:text="  Discovery"
                 android:id="@+id/discoveryswitch"
                 android:textColor="@android:color/black"
-                android:background="@android:color/white"
+                android:background="@drawable/layout_bg"
                 android:layout_marginLeft="1dp"
                 android:layout_marginRight="1dp"
-                android:buttonTint="#f60707"
                 android:layout_marginTop="10dp"
-                />
-    
+                android:button="@android:color/black"/>
+
             <TextView
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textColor="@color/black_overlay"
                 android:textSize="15sp"
                 android:text="@string/discovery_text"
                 android:id="@+id/discoveryTextView"
-                />
-    
+                android:paddingBottom="20dp"/>
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -72,32 +71,36 @@
                     android:layout_height="wrap_content"
                     android:textColor="@android:color/black"
                     android:textSize="20sp"
-                    android:text="Show Me:"/>
+                    android:text="Show Me:"
+                    android:paddingBottom="5dp"/>
                 <TextView
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:textColor="@android:color/black"
                     android:textSize="20sp"
                     android:text="Sex"
-                    android:layout_weight="50"/>
+                    android:layout_weight="50"
+                    android:id="@+id/SexTextView"
+                    android:paddingBottom="5dp"/>
             </LinearLayout>
-    
+
             <Switch
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="  Men"
                 android:id="@+id/menswitch"
                 android:textColor="@android:color/black"
-                android:background="@android:color/white"/>
-    
+                android:background="@drawable/layout_bg"/>
+
             <Switch
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="  Woman"
                 android:id="@+id/womanswitch"
+                android:background="@drawable/layout_bg"
                 android:textColor="@android:color/black"
-                android:background="@android:color/white"/>
-    
+                />
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -108,25 +111,28 @@
                     android:layout_height="wrap_content"
                     android:textColor="@android:color/black"
                     android:textSize="20sp"
-                    android:text="Search Distance:"/>
+                    android:text="Search Distance:"
+                    android:paddingTop="20dp"/>
                 <TextView
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:textColor="@android:color/black"
                     android:textSize="20sp"
                     android:text="Dist"
-                    android:layout_weight="50"/>
+                    android:layout_weight="50"
+                    android:id="@+id/DisTextView"
+                    android:paddingTop="20dp"/>
             </LinearLayout>
-    
+
             <SeekBar
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:id="@+id/distanceseekBar"
-                android:background="@android:color/white"
                 android:clickable="false"
                 android:max="100"
                 android:progressTint="@android:color/black"
-                android:secondaryProgressTint="@android:color/black" />
+                android:secondaryProgressTint="@android:color/black"
+                android:background="@drawable/layout_bg"/>
 
             <!-- #dddcdc gray -->
 
@@ -136,7 +142,8 @@
                 android:text="New Text"
                 android:id="@+id/distancetextView"
                 android:textColor="@android:color/black"/>
-    
+
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -147,44 +154,48 @@
                     android:layout_height="wrap_content"
                     android:textColor="@android:color/black"
                     android:textSize="20sp"
-                    android:text="Show Ages:"/>
+                    android:text="Show Ages:"
+                    android:paddingTop="20dp"/>
                 <TextView
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:textColor="@android:color/black"
                     android:textSize="20sp"
                     android:text="age"
-                    android:layout_weight="50"/>
+                    android:layout_weight="50"
+                    android:id="@+id/AgeTextView"
+                    android:paddingTop="20dp"/>
             </LinearLayout>
-    
+
             <com.edmodo.rangebar.RangeBar
                 xmlns:custom="http://schemas.android.com/apk/res-auto"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:id="@+id/rangebarview"
                 custom:tickCount="37"
-                />
+                android:background="@drawable/layout_bg"/>
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:baselineAligned="false"
                 android:orientation="horizontal" >
-    
+
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:orientation="vertical" >
-    
+
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:id="@+id/leftIndex"
                         style="@style/RoboTheme"
                         android:layout_marginTop="0dp"
-                        android:text="@string/leftIndex" />
-    
+                        android:text="@string/leftIndex"
+                        android:textColor="@android:color/black"/>
+
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -193,23 +204,25 @@
                         android:layout_marginTop="0dp"
                         android:inputType="number"
                         android:text="@string/leftIndexValue"
-                        android:textSize="35sp" />
+                        android:textSize="35sp"
+                        android:textColor="@android:color/black"/>
                 </LinearLayout>
-    
+
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:orientation="vertical" >
-    
+
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:id="@+id/rightIndex"
                         style="@style/RoboTheme"
                         android:layout_marginTop="0dp"
-                        android:text="@string/rightIndex" />
-    
+                        android:text="@string/rightIndex"
+                        android:textColor="@android:color/black"/>
+
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -218,7 +231,8 @@
                         android:layout_marginTop="0dp"
                         android:inputType="number"
                         android:text="@string/rightIndexValue"
-                        android:textSize="35sp" />
+                        android:textSize="35sp"
+                        android:textColor="@android:color/black"/>
                 </LinearLayout>
             </LinearLayout>
 
@@ -257,3 +271,4 @@
     </LinearLayout>
 
 </android.support.v4.widget.DrawerLayout>
+

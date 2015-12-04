@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -20,6 +21,8 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.ShareActionProvider;
 import android.widget.TextView;
+import android.widget.Toast;
+
 import com.bumptech.glide.Glide;
 import com.cs180.ucrtinder.youwho.FragmentSupport.NavigationListener;
 import com.cs180.ucrtinder.youwho.FragmentSupport.OnCardsLoadedListener;
@@ -32,15 +35,18 @@ import com.cs180.ucrtinder.youwho.R;
 import com.cs180.ucrtinder.youwho.tindercard.FlingCardListener;
 import com.cs180.ucrtinder.youwho.tindercard.SwipeFlingAdapterView;
 import com.parse.FindCallback;
+import com.parse.Parse;
 import com.parse.ParseException;
 import com.parse.ParseGeoPoint;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -78,6 +84,8 @@ public class MainActivity extends AppCompatActivity implements FlingCardListener
     public static final String GEO_BOOL = "geolocationBool";
     public static final int MY_PERMISSIONS_REQUEST_FINE_LOCATION = 1;
     Intent geolocationIntent;
+
+    private boolean mIsMatch = false;
 
     public static void removeBackground() {
         viewHolder.background.setVisibility(View.GONE);
@@ -136,6 +144,7 @@ public class MainActivity extends AppCompatActivity implements FlingCardListener
     @Override
     public void onResume(){
         super.onResume();
+        //getCandidates();
         //Log.d(getClass().getSimpleName(), "Stopped the geolocation service");
         // Start geolocation update service
         startService(new Intent(this, GeoLocationService.class));
@@ -332,6 +341,12 @@ public class MainActivity extends AppCompatActivity implements FlingCardListener
 
     public List<ParseUser> getCandidates()  {
 
+//        List<ParseUser> likes = new ArrayList<ParseUser>();
+//        user.put("likes", likes);
+//        user.put("matches",likes);
+//        user.put("dislikes",likes);
+//        user.saveInBackground();
+
         // local variables
         if (user != null) {
             final String gender = user.getString(ParseConstants.KEY_GENDER);
@@ -348,7 +363,6 @@ public class MainActivity extends AppCompatActivity implements FlingCardListener
             // set up query
             ParseQuery<ParseUser> mainQuery = ParseUser.getQuery();
 
-            /*
             if (men && women) {
             } else if (men) {
                 mainQuery.whereEqualTo(ParseConstants.KEY_GENDER, "male");
@@ -359,7 +373,7 @@ public class MainActivity extends AppCompatActivity implements FlingCardListener
             mainQuery.whereGreaterThanOrEqualTo(ParseConstants.KEY_AGE, minAge);
             mainQuery.whereLessThanOrEqualTo(ParseConstants.KEY_AGE, maxAge);
             mainQuery.whereWithinMiles(ParseConstants.KEY_LOCATION, location, maxDist);
-            */
+
 
             // further filter candidates
             try {
@@ -370,6 +384,37 @@ public class MainActivity extends AppCompatActivity implements FlingCardListener
                             return;
                         }
                         candidates = list;
+
+                        // remove likes, dislikes, matches
+                        List<ParseUser> likes = user.getList(ParseConstants.KEY_LIKES);
+                        List<ParseUser> dislikes = user.getList(ParseConstants.KEY_DISLIKES);
+                        List<ParseUser> matches = user.getList(ParseConstants.KEY_MATCHES);
+
+                        for(int j=0; j<likes.size(); j++){
+                            ParseUser u = likes.get(j);
+                            for(int i=0; i<candidates.size(); i++){
+                                if(u.hasSameId(candidates.get(i))){
+                                    candidates.remove(i);
+                                }
+                            }
+                        }
+                        for(int j=0; j<dislikes.size(); j++){
+                            ParseUser u = dislikes.get(j);
+                            for(int i=0; i<candidates.size(); i++){
+                                if(u.hasSameId(candidates.get(i))){
+                                    candidates.remove(i);
+                                }
+                            }
+                        }
+                        for(int j=0; j<matches.size(); j++){
+                            ParseUser u = matches.get(j);
+                            for(int i=0; i<candidates.size(); i++){
+                                if(u.hasSameId(candidates.get(i))){
+                                    candidates.remove(i);
+                                }
+                            }
+                        }
+
 
                         mLimit = new AtomicInteger(candidates.size());
                         for (int i = 0; i < candidates.size(); ++i) {
@@ -388,7 +433,8 @@ public class MainActivity extends AppCompatActivity implements FlingCardListener
                                     candidates.get(i).getString(ParseConstants.KEY_LAYERID)));
                         }
 
-                        /*
+
+
                         Iterator<ParseUser> it = candidates.iterator();
                         while (it.hasNext()) {
                             ParseUser candidate = it.next();
@@ -400,48 +446,9 @@ public class MainActivity extends AppCompatActivity implements FlingCardListener
                             }
                         }
 
-                        // sort candidates
-                        Collections.sort(candidates, new Comparator<ParseUser>() {
-                            public int compare(ParseUser l, ParseUser r) {
-                                double lCount = 0, rCount = 0;
-                                List<String> interests = ParseUser.getCurrentUser().getList(ParseConstants.KEY_INTERESTS);
-                                List<String> lInterests = l.getList(ParseConstants.KEY_INTERESTS);
-                                List<String> rInterests = r.getList(ParseConstants.KEY_INTERESTS);
-                                for (int i = 0; i < interests.size(); ++i) {
-                                    if (lInterests.contains(interests.get(i))) {
-                                        ++lCount;
-                                    }
-                                    if (rInterests.contains(interests.get(i))) {
-                                        ++rCount;
-                                    }
-                                }
-                                double lPoints = lCount / lInterests.size() + lCount / interests.size();
-                                double rPoints = rCount / rInterests.size() + rCount / interests.size();
-                                if (lPoints < rPoints) {
-                                    return 1;
-                                }
-                                else if (lPoints > rPoints) {
-                                    return -1;
-                                }
-                                else{
-                                    return 0;
-                                }
-                            }
-                        });
-
-                        // remove likes, dislikes, matches
-                        List<String> likes = user.getList(ParseConstants.KEY_LIKES);
-                        List<String> dislikes = user.getList(ParseConstants.KEY_DISLIKES);
-                        List<String> matches = user.getList(ParseConstants.KEY_MATCHES);
-                        candidates.removeAll(likes);
-                        candidates.removeAll(dislikes);
-                        candidates.removeAll(matches);
-                        */
-
                         if (candidates == null) {
                             candidates = new ArrayList<>();
                         }
-
                     }
                 });
 
@@ -497,25 +504,38 @@ public class MainActivity extends AppCompatActivity implements FlingCardListener
                 if (i < candidates.size()) {
                     likes.add(candidates.get(currentCandidate));
                 }
+                user.put("likes", likes);
+                user.saveInBackground();
 
                 if (currentCandidate < candidates.size()) {
+
                     List<ParseUser> targetlikes = candidates.get(currentCandidate).getList(ParseConstants.KEY_LIKES);
 
-                    // This is here for testing. Its for the adding of new conversations
-                    ParseUser tempCandidate;
-                    Iterator<ParseUser> candidateIter1 = candidates.iterator();
-                    int index1 = 0;
-                    while (candidateIter1.hasNext() && candidates.size() > currentCandidate) {
-                        if (index1 == currentCandidate) {
-                            break;
-                        }
-                        candidateIter1.next();
-                        index1++;
-                    }
-                    tempCandidate = candidateIter1.next();
-                    // -- end --
+//                    // This is here for testing. Its for the adding of new conversations
+//                    ParseUser tempCandidate;
+//                    Iterator<ParseUser> candidateIter1 = candidates.iterator();
+//                    int index1 = 0;
+//                    while (candidateIter1.hasNext() && candidates.size() > currentCandidate) {
+//                        if (index1 == currentCandidate) {
+//                            break;
+//                        }
+//                        candidateIter1.next();
+//                        index1++;
+//                    }
+//                    tempCandidate = candidateIter1.next();
+//                    // -- end --
 
-                    if (targetlikes.contains(user)) {
+                    boolean exists = false;
+
+                    for(int j=0; j<targetlikes.size(); j++){//ParseUser u : targetlikes){
+                        ParseUser u = targetlikes.get(j);
+                        if(u.hasSameId(user)){
+                           exists = true;
+                        }
+                    }
+
+                    //if (targetlikes.contains(user)) {
+                    if(exists){
                         // Get the current Candidate
                         Iterator<ParseUser> candidateIter = candidates.iterator();
                         int index = 0;
@@ -537,43 +557,51 @@ public class MainActivity extends AppCompatActivity implements FlingCardListener
                         matches.add(currCandidate);
                         //matches.add(candidates.get(currentCandidate));
                         targetMatches.add(user);
+
                         user.put(ParseConstants.KEY_MATCHES, matches);
                         currCandidate.put(ParseConstants.KEY_MATCHES, targetMatches);
                         //candidates.get(currentCandidate).put("matches", targetMatches);
 
+                        //addNewConversationWithThisCard(currCandidate);
                         // Save in the background
                         try {
+                            mIsMatch = true;
                             user.saveInBackground();
                             currCandidate.saveInBackground();
                         }
                         catch (Exception e){
-                            //e.printStackTrace();
+                            e.printStackTrace();
+                            Log.e("ERROR", "there is an errror");
                         }
 
                     }
 
-                    // This is here for testing but now works just needs to have the algorithm
+                    // Th/is is here for testing but now works just needs to have the algorithm
                     // Add the current card if it matches
-                    addNewConversationWithThisCard(tempCandidate);
+                   //addNewConversationWithThisCard(tempCandidate);
                 }
                 ++currentCandidate;
 
-                // When two people match on tinder
-                MainActivity.this.runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        // Make a notification
-                        Intent intent = new Intent(MainActivity.this, MatchedNotifcationActivity.class);
-                        Bundle b = new Bundle();
-                        // Get card user parse String
-                        b.putString(CARD_USER, data.getImagePath());
-                        //b.putString(CARD_USER, currCandidate.getString(ParseConstants.KEY_PHOTO0));
-                        b.putString(CARD_ID, data.getID());
-                        //b.putString(CARD_ID, currCandidate.getObjectId());
-                        intent.putExtra(CARD_BUNDLE, b);
-                        startActivity(intent);
-                    }
-                });
+                if(mIsMatch) {
+                    // When two people match on tinder
+                    MainActivity.this.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            // Make a notification
+                            Intent intent = new Intent(MainActivity.this, MatchedNotifcationActivity.class);
+                            Bundle b = new Bundle();
+                            // Get card user parse String
+                            b.putString(CARD_USER, data.getImagePath());
+                            //b.putString(CARD_USER, currCandidate.getString(ParseConstants.KEY_PHOTO0));
+                            b.putString(CARD_ID, data.getID());
+                            //b.putString(CARD_ID, currCandidate.getObjectId());
+                            intent.putExtra(CARD_BUNDLE, b);
+                            user.saveInBackground();
+                            startActivity(intent);
+                        }
+                    });
+                    mIsMatch = false;
+                }
                 // End of executor service
             }
         }

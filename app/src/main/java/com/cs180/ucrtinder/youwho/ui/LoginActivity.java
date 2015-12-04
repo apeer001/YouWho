@@ -106,10 +106,16 @@ public class LoginActivity extends FragmentActivity {
                 if (parseUser == null) {
                     Log.d("MyApp", "Uh oh. The user cancelled the Facebook login.");
                     return;
+
                 } else if (parseUser.isNew()) {
                     Log.d("MyApp", "User signed up and logged in through Facebook!");
+                    app.initLayerClient(app.getAppId());
                     loginSuccessful(true);
-                    Log.d(getClass().getSimpleName(), "authenticated layer id: " + app.getLayerClient().getAuthenticatedUserId());
+
+                    if(app.getLayerClient() == null){
+                        Log.e("ERROR", "WOOOOOOEEES");
+                    }
+                    //Log.d(getClass().getSimpleName(), "authenticated layer id: " + app.getLayerClient().getAuthenticatedUserId());
                     parseUser.put(ParseConstants.KEY_LAYERID, app.getLayerClient().getAuthenticatedUserId());
                     parseUser.saveInBackground();
                     /*
@@ -117,7 +123,9 @@ public class LoginActivity extends FragmentActivity {
                         parseUser.put(ParseConstants.KEY_LAYERID, app.getLayerClient().getAuthenticatedUserId());
                     }
                     */
-                } else {
+                }
+
+                else {
                     Log.d("MyApp", "User logged in through Facebook!");
                     loginSuccessful(false);
                     String id = parseUser.getString(ParseConstants.KEY_LAYERID);
