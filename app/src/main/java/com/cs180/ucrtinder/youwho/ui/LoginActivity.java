@@ -108,7 +108,7 @@ public class LoginActivity extends FragmentActivity {
         List<String> mPermissions = Arrays.asList("user_friends", "user_photos", "user_birthday", "email", "user_about_me", "user_photos" , "public_profile", "email");
         ParseFacebookUtils.logInWithReadPermissionsInBackground(mActivity, mPermissions, new LogInCallback() {
             @Override
-            public void done(ParseUser parseUser, ParseException e) {
+            public void done(final ParseUser parseUser, ParseException e) {
                 if (parseUser == null) {
                     Log.d("MyApp", "Uh oh. The user cancelled the Facebook login.");
                     return;
@@ -117,22 +117,7 @@ public class LoginActivity extends FragmentActivity {
                     loginSuccessful(true);
 
                     app.initLayerClient(app.getAppId());
-
-//                    Log.e("LAYERID", "" + app.getAppId());
-//
-//                    if(app.getLayerClient().getAuthenticatedUserId() == null){
-//                        Log.e("WOES", "NULL");
-//                        app.getLayerClient().authenticate();
-//                    }
-
-                    //Log.d(getClass().getSimpleName(), "authenticated layer id: " + app.getLayerClient().getAuthenticatedUserId());
-                    //parseUser.put(ParseConstants.KEY_LAYERID, app.getLayerClient().getAuthenticatedUserId());
-                    //parseUser.saveInBackground();
-                    /*
-                    if (app != null) {
-                        parseUser.put(ParseConstants.KEY_LAYERID, app.getLayerClient().getAuthenticatedUserId());
-                    }
-                    */
+                    app.getLayerClient().authenticate();
                 } else {
                     Log.d("MyApp", "User logged in through Facebook!");
                     loginSuccessful(false);
@@ -173,11 +158,11 @@ public class LoginActivity extends FragmentActivity {
                                     e.printStackTrace();
                                 }
 
-//                                Intent intent = new Intent(mActivity, AtlasLoginScreen.class);
-//                                startActivityForResult(intent, REQUEST_CODE_LOGIN_SCREEN);
+                                Intent intent = new Intent(mActivity, AtlasLoginScreen.class);
+                                startActivityForResult(intent, REQUEST_CODE_LOGIN_SCREEN);
 
-                                Intent intent = new Intent(mActivity, MainActivity.class);
-                                intent.putExtra("user_data", jsonObject.toString());
+//                                Intent intent = new Intent(mActivity, MainActivity.class);
+//                                intent.putExtra("user_data", jsonObject.toString());
 
                                 startActivity(intent);
                                 //LoginActivity.this.finish();
@@ -366,6 +351,13 @@ public class LoginActivity extends FragmentActivity {
             return;
         }
         if (requestCode == REQUEST_CODE_LOGIN_SCREEN && resultCode == RESULT_OK) {
+            ParseUser user = ParseUser.getCurrentUser();
+
+            if(app.getLayerClient().isAuthenticated()){
+                user.put(ParseConstants.KEY_LAYERID, app.getLayerClient().getAuthenticatedUserId());
+                user.saveInBackground();
+            }
+
             String newUserId = "0";
             Intent addGlobalChatIntent = new Intent(getApplicationContext(), AtlasMessagesScreen.class);
             Log.d(getClass().getSimpleName(), "Jumping to new conversation message update " + newUserId);

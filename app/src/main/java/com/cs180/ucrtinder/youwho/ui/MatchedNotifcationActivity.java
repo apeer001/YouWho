@@ -20,6 +20,7 @@ import com.parse.ParseUser;
 public class MatchedNotifcationActivity extends AppCompatActivity {
 
     private Button continueBtn;
+    private Button messageButton;
     private ImageView currentUserImage;
     private ImageView currentCandidateImage;
 
@@ -29,6 +30,7 @@ public class MatchedNotifcationActivity extends AppCompatActivity {
         setContentView(R.layout.activity_matched_notifcation);
 
         continueBtn = (Button) findViewById(R.id.continueBtn);
+        messageButton = (Button) findViewById(R.id.message_them_btn);
         currentUserImage = (ImageView) findViewById(R.id.userImage);
         currentCandidateImage = (ImageView) findViewById(R.id.candidateImage);
 

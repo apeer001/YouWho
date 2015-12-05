@@ -7,6 +7,9 @@ import android.util.Log;
 import com.cs180.ucrtinder.youwho.Messenger.AtlasIdentityProvider;
 import com.cs180.ucrtinder.youwho.atlas.Atlas;
 import com.layer.sdk.LayerClient;
+import com.layer.sdk.exceptions.LayerException;
+import com.layer.sdk.listeners.LayerAuthenticationListener;
+import com.layer.sdk.listeners.LayerConnectionListener;
 import com.parse.Parse;
 import com.parse.ParseFacebookUtils;
 import com.parse.ParseInstallation;
@@ -36,7 +39,7 @@ public class YouWhoApplication extends Application {
     private static final String TAG = YouWhoApplication.class.getSimpleName();
     private static final boolean debug = false;
 
-    private LayerClient layerClient;
+    private LayerClient mLayerClient;
     private AtlasIdentityProvider identityProvider;
     private String appId = LAYER_APP_ID;
 
@@ -82,7 +85,7 @@ public class YouWhoApplication extends Application {
     }
 
     public LayerClient getLayerClient() {
-        return layerClient;
+        return mLayerClient;
     }
 
     /**
@@ -92,7 +95,7 @@ public class YouWhoApplication extends Application {
      * @return The newly initialized LayerClient, or the existing LayerClient
      */
     public LayerClient initLayerClient(final String appIdString) {
-        if (layerClient != null) return layerClient;
+        if (mLayerClient != null) return mLayerClient;
 
         String appId = appIdString;
         if (appIdString.startsWith("layer:///")) {
@@ -102,25 +105,43 @@ public class YouWhoApplication extends Application {
             appId = "layer:///apps/staging/" + UUID.fromString(appIdString).toString();
         }
 
-        final LayerClient client = LayerClient.newInstance(this, appId, new LayerClient.Options()
-                .broadcastPushInForeground(false)
+        mLayerClient = LayerClient.newInstance(this, appId, new LayerClient.Options()
+                .broadcastPushInForeground(true)
                 .googleCloudMessagingSenderId(GCM_SENDER_ID));
         if (debug) Log.w(TAG, "onCreate() client created");
 
         setAppId(appIdString);
-        layerClient = client;
 
-        if (!client.isAuthenticated()) {
-            client.authenticate();
+        if (!mLayerClient.isAuthenticated()) {
+
+            mLayerClient.registerConnectionListener(new LayerConnectionListener() {
+                @Override
+                public void onConnectionConnected(LayerClient layerClient) {
+                    Log.e("HERE", "CHECK THIS 2");
+                    //mLayerClient.authenticate();
+                }
+
+                @Override
+                public void onConnectionDisconnected(LayerClient layerClient) {
+
+                }
+
+                @Override
+                public void onConnectionError(LayerClient layerClient, LayerException e) {
+
+                }
+            });
+
+            mLayerClient.connect();
         }
-        else if (!client.isConnected()) {
-            client.connect();
+        else if (!mLayerClient.isConnected()) {
+            mLayerClient.connect();
 
             // Save the authenticated user id to parse
             ParseUser currentUser = ParseUser.getCurrentUser();
             if (currentUser != null) {
-                currentUser.put(ParseConstants.KEY_LAYERID, client.getAuthenticatedUserId());
-                Log.w(TAG, "Layer authenticated with " + client.getAuthenticatedUserId());
+                currentUser.put(ParseConstants.KEY_LAYERID, mLayerClient.getAuthenticatedUserId());
+                Log.w(TAG, "Layer authenticated with " + mLayerClient.getAuthenticatedUserId());
             }
         }
         if (debug) {
@@ -128,7 +149,7 @@ public class YouWhoApplication extends Application {
         }
         identityProvider.requestRefresh();
 
-        return layerClient;
+        return mLayerClient;
     }
 
     public Atlas.ParticipantProvider getParticipantProvider() {

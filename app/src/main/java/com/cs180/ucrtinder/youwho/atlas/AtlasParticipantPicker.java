@@ -123,7 +123,21 @@ public class AtlasParticipantPicker extends FrameLayout {
         LayoutInflater.from(getContext()).inflate(R.layout.atlas_participants_picker, this);
 
         this.participantProvider = participantProvider;
-        if (userIdToSkip != null) skipUserIds.addAll(Arrays.asList(userIdToSkip));
+
+        if (userIdToSkip != null){
+
+            boolean isEmpty = true;
+
+            for(int i = 0; i < userIdToSkip.length; i++){
+                if(userIdToSkip[i] != null){
+                    isEmpty = false;
+                }
+            }
+
+            if(!isEmpty) {
+                skipUserIds.addAll(Arrays.asList(userIdToSkip));
+            }
+        }
         
         // START OF -------------------- Participant Picker ----------------------------------------
         this.rootView = this;

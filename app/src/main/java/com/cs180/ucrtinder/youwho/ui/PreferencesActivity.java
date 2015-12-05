@@ -56,8 +56,8 @@ public class PreferencesActivity extends AppCompatActivity{
     private static final String PREF_RIGHTRANGE = "pred_right_range";
 
     private RangeBar rangeBar;
-  //  private int leftIndex;
-   // private int rightIndex;
+    //  private int leftIndex;
+    // private int rightIndex;
 
     public int progress;
     public boolean discoveryBool;
@@ -131,8 +131,8 @@ public class PreferencesActivity extends AppCompatActivity{
         menSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-               menBool = b;
-               //Toast.makeText(getApplicationContext(), "Men Switch works", Toast.LENGTH_SHORT).show();
+                menBool = b;
+                //Toast.makeText(getApplicationContext(), "Men Switch works", Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -205,27 +205,27 @@ public class PreferencesActivity extends AppCompatActivity{
 
     @Override
     protected void onStop() {
-        /*
-        try {
-            executor.execute(new saveRunnable());
-            executor.shutdown();
-        } catch (RejectedExecutionException r) {
-            r.printStackTrace();
-        }
-        */
+       /*
+       try {
+           executor.execute(new saveRunnable());
+           executor.shutdown();
+       } catch (RejectedExecutionException r) {
+           r.printStackTrace();
+       }
+       */
         super.onStop();
     }
 
     @Override
     public void onDestroy() {
-        /*
-        try {
-            executor.execute(new saveRunnable());
-            executor.shutdown();
-        } catch (RejectedExecutionException r) {
-            r.printStackTrace();
-        }
-        */
+       /*
+       try {
+           executor.execute(new saveRunnable());
+           executor.shutdown();
+       } catch (RejectedExecutionException r) {
+           r.printStackTrace();
+       }
+       */
         super.onDestroy();
     }
 
@@ -356,7 +356,7 @@ public class PreferencesActivity extends AppCompatActivity{
                     discovery.setChecked(discoveryBool);
                     disSeekBar.setProgress(progress);
                     textView.setText(tempText);
-                   //rangeBar.setLeft(tempLeft -18);
+                    //rangeBar.setLeft(tempLeft -18);
                     //rangeBar.setRight(tempRight - 18);
                     rangeBar.setThumbIndices(tempLeft-18,tempRight-18);
 
@@ -369,3 +369,5 @@ public class PreferencesActivity extends AppCompatActivity{
         }
     }
 }
+
+

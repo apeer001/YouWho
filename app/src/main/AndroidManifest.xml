@@ -12,6 +12,13 @@
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" />
 
+    <permission android:name="com.cs180.ucrtinder.youwho.permission.LAYER_PUSH"
+                android:protectionLevel="signature"/>
+    <uses-permission android:name="com.cs180.ucrtinder.youwho.permission.LAYER_PUSH"/>
+    <permission android:name="com.cs180.ucrtinder.youwho.permission.C2D_MESSAGE"
+                android:protectionLevel="signature"/>
+    <uses-permission android:name="com.cs180.ucrtinder.youwho.permission.C2D_MESSAGE"/>
+
     <!-- QR Code Scanner -->
     <uses-permission android:name="android.permission.CAMERA" />
 
