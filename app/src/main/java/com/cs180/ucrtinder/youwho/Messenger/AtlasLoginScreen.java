@@ -167,6 +167,7 @@ public class AtlasLoginScreen extends Activity {
                 Log.e(TAG, "onAuthenticationError() ", exception);
                 inProgress = false;
                 updateValues();
+                setResult(RESULT_CANCELED);
                 client.unregisterAuthenticationListener(this);
                 runOnUiThread(new Runnable() {
                     public void run() {

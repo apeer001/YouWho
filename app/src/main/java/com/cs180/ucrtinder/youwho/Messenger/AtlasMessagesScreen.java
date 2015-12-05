@@ -67,6 +67,8 @@ import com.cs180.ucrtinder.youwho.atlas.cells.ImageCell;
 import com.cs180.ucrtinder.youwho.Parse.YouWhoApplication.keys;
 import com.layer.sdk.LayerClient;
 import com.layer.sdk.changes.LayerChangeEvent;
+import com.layer.sdk.exceptions.LayerException;
+import com.layer.sdk.listeners.LayerAuthenticationListener;
 import com.layer.sdk.listeners.LayerChangeEventListener;
 import com.layer.sdk.messaging.Conversation;
 import com.layer.sdk.messaging.ConversationOptions;
@@ -109,6 +111,7 @@ public class AtlasMessagesScreen extends AppCompatActivity {
     private AtlasTypingIndicator typingIndicator;
     
     private YouWhoApplication app;
+    private Activity mActivity;
     
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -116,6 +119,8 @@ public class AtlasMessagesScreen extends AppCompatActivity {
         this.uiHandler = new Handler();
         this.app = (YouWhoApplication) getApplication();
         setContentView(R.layout.atlas_screen_messages);
+
+        mActivity = this;
 
         // Android drawer init
         // Creating an android drawer to slide in from the left side
@@ -270,19 +275,29 @@ public class AtlasMessagesScreen extends AppCompatActivity {
                 } else {
                     ParseUser currentUser = ParseUser.getCurrentUser();
                     String myid = currentUser.getString(ParseConstants.KEY_LAYERID);
-                    msgText = participantMap.get(myid).getFirstName() + " joined the global chat";
+
+                    msgText = "";
+
+                    if(participantMap.get(myid) != null) {
+                        msgText = participantMap.get(myid).getFirstName() + " joined the global chat";
+                    }
                 }
+
                 MessagePart part = app.getLayerClient().newMessagePart(Atlas.MIME_TYPE_TEXT, msgText.getBytes());
                 Message message = app.getLayerClient().newMessage(Arrays.asList(part));
                 ensureConversationReady();
                 conv.send(message);
                 setResult(RESULT_OK);
                 finish();
+
             } else {
                 Log.d(getClass().getSimpleName(), "Particpant is null");
                 setResult(RESULT_CANCELED);
                 finish();
             }
+
+            setResult(RESULT_CANCELED);
+            finish();
 
         }
         
@@ -612,4 +627,44 @@ public class AtlasMessagesScreen extends AppCompatActivity {
         //Tools.setStatusBarColor(getWindow(), Color.parseColor("#99FF0000"));
     }
 
+
+    private class LayerMessageListener implements LayerAuthenticationListener{
+
+        private String msgText;
+
+        public LayerMessageListener(String txt){
+            msgText = txt;
+        }
+
+        @Override
+        public void onAuthenticated(LayerClient layerClient, String s) {
+
+            mActivity.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    MessagePart part = app.getLayerClient().newMessagePart(Atlas.MIME_TYPE_TEXT, msgText.getBytes());
+                    Message message = app.getLayerClient().newMessage(Arrays.asList(part));
+                    ensureConversationReady();
+                    conv.send(message);
+                    setResult(RESULT_OK);
+                    finish();
+                }
+            });
+        }
+
+        @Override
+        public void onDeauthenticated(LayerClient layerClient) {
+
+        }
+
+        @Override
+        public void onAuthenticationChallenge(LayerClient layerClient, String s) {
+
+        }
+
+        @Override
+        public void onAuthenticationError(LayerClient layerClient, LayerException e) {
+
+        }
+    }
 }
