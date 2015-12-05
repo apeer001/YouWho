@@ -56,13 +56,15 @@ public class PreferencesActivity extends AppCompatActivity{
     private static final String PREF_RIGHTRANGE = "pred_right_range";
 
     private RangeBar rangeBar;
-    private int leftIndex = 0;
-    private int rightIndex = 0;
+  //  private int leftIndex;
+   // private int rightIndex;
 
     public int progress;
     public boolean discoveryBool;
     public boolean menBool;
     public boolean womanBool;
+    public int tempLeft;
+    public int tempRight;
 
     private ExecutorService executor;
     private static final Integer MYTHREADS = 3;
@@ -167,19 +169,20 @@ public class PreferencesActivity extends AppCompatActivity{
             @Override
             public void onIndexChangeListener(RangeBar rangeBar, int i, int i1) {
                 if (i < 0) {
-                    rangeBar.setLeft(0);
+                    //rangeBar.setLeft(0);
+
                     i = 0;
                 }
                 if (i1 > 36) {
-                    rangeBar.setRight(36);
+                    //rangeBar.setRight(36);
                     i1 = 36;
                 }
 
-                leftIndex = i + 18;
-                rightIndex = i1 + 18;
+                tempLeft = i + 18;
+                tempRight = i1 + 18;
 
-                String temp = Integer.toString(leftIndex);
-                String temp2 = Integer.toString(rightIndex);
+                String temp = Integer.toString(tempLeft);
+                String temp2 = Integer.toString(tempRight);
                 leftTextView.setText(temp);
                 rightTextView.setText(temp2);
             }
@@ -247,6 +250,8 @@ public class PreferencesActivity extends AppCompatActivity{
                 currentUser.put(ParseConstants.KEY_DISTANCE, progress);
                 currentUser.put(ParseConstants.KEY_MEN, menBool);
                 currentUser.put(ParseConstants.KEY_WOMEN, womanBool);
+                currentUser.put(ParseConstants.KEY_SMALLESTAGE, tempLeft);
+                currentUser.put(ParseConstants.KEY_LARGESTAGE, tempRight);
                 //currentUser.put(ParseConstants.KEY_, discoveryBool);
 
                 // Save all changes in the background
@@ -267,8 +272,8 @@ public class PreferencesActivity extends AppCompatActivity{
             editor.putBoolean(PREF_WOMEN, womanBool);
             editor.putBoolean(PREF_DISC,discoveryBool);
             editor.putString(PREF_DISTTEXT, textView.getText().toString());
-            editor.putInt(PREF_LEFTRANGE, leftIndex);
-            editor.putInt(PREF_RIGHTRANGE, rightIndex);
+            editor.putInt(PREF_LEFTRANGE, tempLeft);
+            editor.putInt(PREF_RIGHTRANGE, tempRight);
 
             // Save all changes
             editor.apply();
@@ -299,7 +304,7 @@ public class PreferencesActivity extends AppCompatActivity{
                 progress = sharedPreferences.getInt(PREF_PROG, -1);
                 if (progress == -1) {
                     // Pull from parse to get the default progress value
-                    progress =  currentUser.getInt(ParseConstants.KEY_DISTANCE);
+                    progress = currentUser.getInt(ParseConstants.KEY_DISTANCE);
                     editor.putInt(PREF_PROG, progress);
                 }
                 menBool = sharedPreferences.getBoolean(PREF_MEN, false);
@@ -316,6 +321,17 @@ public class PreferencesActivity extends AppCompatActivity{
                 if (!discoveryBool) {
 
                 }
+                tempLeft = sharedPreferences.getInt(PREF_LEFTRANGE, 0);
+                if(tempLeft == 0){
+                    tempLeft = currentUser.getInt(ParseConstants.KEY_SMALLESTAGE);
+                    editor.putInt(PREF_LEFTRANGE, tempLeft);
+                }
+                tempRight = sharedPreferences.getInt(PREF_RIGHTRANGE, 0);
+                if(tempRight == 0){
+                    tempRight = currentUser.getInt(ParseConstants.KEY_LARGESTAGE);
+                    editor.putInt(PREF_RIGHTRANGE, tempRight);
+                }
+
 
                 // Save all changes
                 editor.commit();
@@ -327,8 +343,8 @@ public class PreferencesActivity extends AppCompatActivity{
             womanBool = sharedPreferences.getBoolean(PREF_WOMEN, false);
             discoveryBool = sharedPreferences.getBoolean(PREF_DISC, false);
             final String tempText = sharedPreferences.getString(PREF_DISTTEXT, "");
-            final int tempLeft = sharedPreferences.getInt(PREF_LEFTRANGE, 18);
-            final int tempRight = sharedPreferences.getInt(PREF_RIGHTRANGE, 30);
+            tempLeft = sharedPreferences.getInt(PREF_LEFTRANGE, 0);
+            tempRight = sharedPreferences.getInt(PREF_RIGHTRANGE, 0);
 
             // Update the Ui with the values
             PreferencesActivity.this.runOnUiThread(new Runnable() {
@@ -340,8 +356,9 @@ public class PreferencesActivity extends AppCompatActivity{
                     discovery.setChecked(discoveryBool);
                     disSeekBar.setProgress(progress);
                     textView.setText(tempText);
-                    rangeBar.setLeft(tempLeft - 18);
-                    rangeBar.setRight(tempRight - 18);
+                   //rangeBar.setLeft(tempLeft -18);
+                    //rangeBar.setRight(tempRight - 18);
+                    rangeBar.setThumbIndices(tempLeft-18,tempRight-18);
 
                     String temp = Integer.toString(tempLeft);
                     String temp2 = Integer.toString(tempRight);
