@@ -157,7 +157,6 @@ public class LoginActivity extends FragmentActivity {
                                 } catch (IllegalArgumentException e) {
                                     e.printStackTrace();
                                 }
-
                                 Intent intent = new Intent(mActivity, AtlasLoginScreen.class);
                                 startActivityForResult(intent, REQUEST_CODE_LOGIN_SCREEN);
 

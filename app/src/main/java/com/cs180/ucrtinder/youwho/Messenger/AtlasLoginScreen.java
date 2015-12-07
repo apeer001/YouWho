@@ -29,6 +29,8 @@ import android.widget.Toast;
 import com.cs180.ucrtinder.youwho.Parse.ParseConstants;
 import com.cs180.ucrtinder.youwho.Parse.YouWhoApplication;
 import com.cs180.ucrtinder.youwho.R;
+import com.cs180.ucrtinder.youwho.atlas.Atlas;
+import com.google.android.gms.gcm.GcmListenerService;
 import com.layer.sdk.LayerClient;
 import com.layer.sdk.exceptions.LayerException;
 import com.layer.sdk.listeners.LayerAuthenticationListener;
@@ -102,6 +104,14 @@ public class AtlasLoginScreen extends Activity {
         final LayerClient layerClient = app.getLayerClient();
         final AtlasIdentityProvider identityProvider = app.getIdentityProvider();
 
+        if (layerClient == null) {
+            return;
+        } else if (layerClient.isAuthenticated()) {
+            setResult(RESULT_OK);
+            this.finish();
+            return;
+        }
+
         String userNameTemp = "";
         try {
             ParseUser parseUser = ParseUser.getCurrentUser();
@@ -154,9 +164,14 @@ public class AtlasLoginScreen extends Activity {
                 if (debug) Log.w(TAG, "onAuthenticated() userID: " + userId);
                 inProgress = false;
                 updateValues();
-                setResult(RESULT_OK);
                 client.unregisterAuthenticationListener(this);
-                finish();
+                AtlasLoginScreen.this.runOnUiThread(new Runnable() {
+                    public void run() {
+                        Log.d(getClass().getSimpleName(), "Exiting now from atlas login with success!");
+                        AtlasLoginScreen.this.setResult(RESULT_OK);
+                        AtlasLoginScreen.this.finish();
+                    }
+                });
             }
 
             public void onDeauthenticated(LayerClient client) {
@@ -167,11 +182,17 @@ public class AtlasLoginScreen extends Activity {
                 Log.e(TAG, "onAuthenticationError() ", exception);
                 inProgress = false;
                 updateValues();
-                setResult(RESULT_CANCELED);
                 client.unregisterAuthenticationListener(this);
                 runOnUiThread(new Runnable() {
                     public void run() {
                         Toast.makeText(AtlasLoginScreen.this, exception.getMessage(), Toast.LENGTH_LONG).show();
+                    }
+                });
+                AtlasLoginScreen.this.runOnUiThread(new Runnable() {
+                    public void run() {
+                        Log.d(getClass().getSimpleName(), "Exiting now from atlas login with fail!");
+                        AtlasLoginScreen.this.setResult(RESULT_CANCELED);
+                        AtlasLoginScreen.this.finish();
                     }
                 });
             }
@@ -182,12 +203,13 @@ public class AtlasLoginScreen extends Activity {
         layerClient.authenticate();
         updateValues();
 
+        /*
         final Long startTime = System.currentTimeMillis();
         final Handler mHandler = new Handler();
         mHandler.postDelayed(new Runnable() {
             @Override
             public void run() {
-                if (System.currentTimeMillis() - startTime  > 15 * WAIT_TIME) {
+                if (System.currentTimeMillis() - startTime  > 100 * WAIT_TIME) {
                     mHandler.removeCallbacks(this);
                     setResult(RESULT_OK);
                     layerClient.unregisterAuthenticationListener(layerAuthenticationListener);
@@ -197,5 +219,6 @@ public class AtlasLoginScreen extends Activity {
                 mHandler.postDelayed(this, WAIT_TIME);
             }
         }, WAIT_TIME);
+        */
     }
 }

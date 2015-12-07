@@ -264,7 +264,7 @@ public class AtlasMessagesScreen extends AppCompatActivity {
             }
             Log.d(getClass().getSimpleName(), "done");
             // Instantiate a conversation on the list
-            if (participant != null) {
+            if (participant != null && app.getLayerClient() != null && app.getLayerClient().isAuthenticated()) {
                 Log.d(getClass().getSimpleName(), "Particpant is not null");
                 Log.d(getClass().getSimpleName(), "New Participant: " + participant.getFirstName());
                 participantsPicker.addParticipantEntry(userID);
@@ -295,10 +295,8 @@ public class AtlasMessagesScreen extends AppCompatActivity {
                 setResult(RESULT_CANCELED);
                 finish();
             }
-
             setResult(RESULT_CANCELED);
             finish();
-
         }
         
         // location manager for inserting locations:

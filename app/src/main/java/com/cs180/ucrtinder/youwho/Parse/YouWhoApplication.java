@@ -64,8 +64,7 @@ public class YouWhoApplication extends Application {
     public void onCreate() {
         super.onCreate();
 
-        // Enable Local Datastore.
-        //Parse.enableLocalDatastore(this);
+        // Enable parse
         Parse.initialize(this, "o66AszQHjZRyH1nY7XMeHL9t9oAKeSe5hWDfRYEH", "9lo4BUYpKJGmNTN6jtoPD8LoYN4R1m7TKHIaDxYG");
         ParseFacebookUtils.initialize(this);
         ParseInstallation.getCurrentInstallation().saveInBackground();

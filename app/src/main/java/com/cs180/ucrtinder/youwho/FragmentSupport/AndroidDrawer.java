@@ -16,6 +16,7 @@ import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.ListView;
 
+import com.cs180.ucrtinder.youwho.Parse.YouWhoApplication;
 import com.cs180.ucrtinder.youwho.ui.ConversationActivity;
 import com.cs180.ucrtinder.youwho.ui.IGWebActivity;
 import com.cs180.ucrtinder.youwho.ui.LoadingScreenActivity;
@@ -46,6 +47,7 @@ public class AndroidDrawer {
     private int mPosition;
     private AppCompatActivity mActivity;
     private ImageView mProfileImage;
+    private Context mContext;
 
     public AndroidDrawer(AppCompatActivity activity, int drawer_layout, int left_drawer, int profile_pic){
         this(activity, drawer_layout, left_drawer, profile_pic, null);
@@ -53,6 +55,7 @@ public class AndroidDrawer {
 
     public AndroidDrawer(AppCompatActivity activity, int drawer_layout, int left_drawer, int profile_pic, final Context context){
 
+        mContext = context;
         mActivity = activity;
 
         mPosition = getPosition(activity);
@@ -156,6 +159,15 @@ public class AndroidDrawer {
                         if (ParseUser.getCurrentUser() != null) {
                             Log.e(getClass().getSimpleName(), "LOGGED OUT SUCCESSFULLY");
                             ParseUser.logOut();
+                        }
+                        YouWhoApplication app = (YouWhoApplication)mActivity.getApplication();
+                        if(app.getLayerClient() != null) {
+                            if (app.getLayerClient().isAuthenticated()) {
+                                app.getLayerClient().deauthenticate();
+                            }
+                            if (app.getLayerClient().isConnected()) {
+                                app.getLayerClient().disconnect();
+                            }
                         }
                     }
                 });
